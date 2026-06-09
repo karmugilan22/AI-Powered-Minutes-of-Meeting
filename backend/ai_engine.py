@@ -13,6 +13,14 @@ try:
 except ImportError:
     sr = None
 
+# Optional faster-whisper support (local Whisper model)
+try:
+    from faster_whisper import WhisperModel
+    FW_AVAILABLE = True
+except Exception:
+    WhisperModel = None
+    FW_AVAILABLE = False
+
 def split_wav_file(input_path, chunk_duration_sec=12):
     """
     Splits a WAV file into smaller WAV chunks of chunk_duration_sec.
@@ -52,6 +60,35 @@ def split_wav_file(input_path, chunk_duration_sec=12):
         return [input_path]
         
     return chunk_paths
+
+
+def _transcribe_with_whisper(audio_path, model_path="base"):
+    """Transcribe audio using a local faster-whisper model.
+    model_path can be a model name (e.g., 'small', 'base') or a local filesystem path to the model.
+    """
+    if not FW_AVAILABLE or WhisperModel is None:
+        raise RuntimeError("faster-whisper is not available in the environment")
+
+    # Create model instance (kept local to the call to avoid global GPU/CPU state issues)
+    # Use CPU by default; if user has GPU set CUDA_VISIBLE_DEVICES or customize here
+    device = os.environ.get("WHISPER_DEVICE", "cpu")
+    logger.info(f"Loading Whisper model '{model_path}' on device '{device}'...")
+    model = WhisperModel(model_path, device=device)
+
+    logger.info("Starting transcription with faster-whisper...")
+    segments, info = model.transcribe(audio_path, beam_size=5)
+    texts = []
+    try:
+        for segment in segments:
+            # segment.text contains the recognized text for this segment
+            texts.append(segment.text)
+    except Exception:
+        # In some versions segments is an iterator
+        for seg in segments:
+            texts.append(getattr(seg, 'text', str(seg)))
+
+    transcript = " ".join(t.strip() for t in texts if t and t.strip())
+    return transcript
 
 def transcribe_and_summarize(audio_path, api_key=None, ollama_model="tinyllama"):
     """
@@ -174,11 +211,28 @@ def _process_with_gemini(audio_path, api_key):
 def _process_with_local_fallback(audio_path, ollama_model="tinyllama"):
     logger.info("Processing audio with local/offline SpeechRecognition fallback...")
     
-    if not sr:
+    if not sr and not FW_AVAILABLE:
         return {
-            "transcript": "Speech recognition library (SpeechRecognition) is not installed. Please install it or provide a Gemini API Key.",
+            "transcript": "No local speech recognition available. Install 'SpeechRecognition' or 'faster-whisper', or provide a Gemini API Key.",
             "summary": _get_no_key_summary_dict()
         }
+    # If faster-whisper is available, prefer it for local transcription
+    if FW_AVAILABLE:
+        try:
+            model_path = os.environ.get("WHISPER_MODEL_PATH") or os.environ.get("WHISPER_MODEL") or "base"
+            logger.info(f"Using faster-whisper model at: {model_path}")
+            transcript = _transcribe_with_whisper(audio_path, model_path=model_path)
+            if transcript and transcript.strip():
+                logger.info("Transcription via faster-whisper successful.")
+                summary = _summarize_with_ollama(transcript, ollama_model)
+                if not summary:
+                    summary = _generate_rule_based_summary(transcript)
+                return {
+                    "transcript": transcript,
+                    "summary": summary
+                }
+        except Exception as fw_err:
+            logger.warning(f"faster-whisper transcription failed: {fw_err}")
 
     recognizer = sr.Recognizer()
     try:
