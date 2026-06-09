@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered MoM Assistant</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="/static/js/app.js" defer></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="6" width="4" height="12" rx="2" fill="url(#logo-grad)" />
+                        <rect x="8" y="3" width="4" height="18" rx="2" fill="url(#logo-grad)" />
+                        <rect x="14" y="8" width="4" height="8" rx="2" fill="url(#logo-grad)" />
+                        <rect x="20" y="5" width="4" height="14" rx="2" fill="url(#logo-grad)" />
+                        <defs>
+                            <linearGradient id="logo-grad" x1="2" y1="3" x2="24" y2="21" gradientUnits="userSpaceOnUse">
+                                <stop stop-color="#6366F1" />
+                                <stop offset="1" stop-color="#A855F7" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span>MoM Assistant</span>
+                </div>
+                <button id="new-meeting-btn" class="btn btn-primary btn-sm" title="Start a new meeting">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                    New
+                </button>
+            </div>
+
+            <!-- Search -->
+            <div class="search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="text" id="search-input" placeholder="Search meetings...">
+            </div>
+
+            <!-- Meeting List -->
+            <div class="meeting-list" id="meetings-container">
+                <div class="list-placeholder">Loading meetings...</div>
+            </div>
+
+            <!-- Sidebar Footer -->
+            <div class="sidebar-footer">
+                <button id="settings-btn" class="footer-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Settings
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Panel -->
+        <main class="main-content">
+            <!-- Welcome View (Default) -->
+            <div id="welcome-view" class="view-panel active">
+                <div class="welcome-hero">
+                    <h1>MoM AI Assistant</h1>
+                    <p>Record or upload your meetings to automatically generate precise, structured minutes, decisions, and action items in seconds.</p>
+                </div>
+
+                <div class="action-cards">
+                    <div class="action-card" id="card-browser-record">
+                        <div class="card-icon icon-red">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+                        </div>
+                        <h3>Record in Browser</h3>
+                        <p>Use your computer or mobile device microphone to record meetings directly from this web page.</p>
+                        <button class="btn btn-primary start-browser-record-btn">Start Recording</button>
+                    </div>
+
+                    <div class="action-card" id="card-server-record">
+                        <div class="card-icon icon-indigo">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+                        </div>
+                        <h3>Record on Device</h3>
+                        <p>Trigger recording from a microphone physically plugged into the desktop host or Raspberry Pi.</p>
+                        <button class="btn btn-secondary start-server-record-btn">Record on Host</button>
+                    </div>
+
+                    <div class="action-card" id="card-upload">
+                        <div class="card-icon icon-purple">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                        </div>
+                        <h3>Upload Audio File</h3>
+                        <p>Upload a pre-recorded audio file (WAV, MP3, M4A) to transcribe and generate meeting minutes.</p>
+                        <button class="btn btn-secondary trigger-upload-btn">Upload File</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Meeting View -->
+            <div id="meeting-view" class="view-panel">
+                <div class="meeting-header">
+                    <div class="meeting-meta-left">
+                        <h2 id="meeting-title" contenteditable="true" title="Click to rename">Meeting Title</h2>
+                        <div class="meeting-info-row">
+                            <span id="meeting-date" class="info-tag">Date</span>
+                            <span id="meeting-duration" class="info-tag">Duration</span>
+                            <span id="meeting-status-badge" class="badge">Completed</span>
+                        </div>
+                    </div>
+                    <div class="meeting-actions-right">
+                        <button id="download-pdf-btn" class="btn btn-indigo">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                            Export PDF
+                        </button>
+                        <button id="delete-meeting-btn" class="btn btn-danger-outline">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Meeting Content Tabs -->
+                <div class="tabs-container">
+                    <nav class="tabs-nav">
+                        <button class="tab-btn active" data-tab="tab-insights">Dashboard Insights</button>
+                        <button class="tab-btn" data-tab="tab-minutes">Minutes of Meeting</button>
+                        <button class="tab-btn" data-tab="tab-transcript">Full Transcript</button>
+                    </nav>
+                    
+                    <div class="tab-content">
+                        <!-- Tab: Insights -->
+                        <div id="tab-insights" class="tab-pane active">
+                            <div class="insights-summary-grid">
+                                <div class="metric-card bg-indigo-glass">
+                                    <div class="metric-header">Decisions Made</div>
+                                    <div class="metric-val" id="insight-decisions-count">0</div>
+                                </div>
+                                <div class="metric-card bg-amber-glass">
+                                    <div class="metric-header">Action Items</div>
+                                    <div class="metric-val" id="insight-actions-count">0</div>
+                                </div>
+                                <div class="metric-card bg-emerald-glass">
+                                    <div class="metric-header">Meeting Focus</div>
+                                    <div class="metric-val text-sm" id="insight-meeting-duration">0 min</div>
+                                </div>
+                            </div>
+                            
+                            <div class="insights-highlight-section">
+                                <h3>Executive Overview</h3>
+                                <p id="insight-overview-content" class="overview-highlight">No overview generated yet.</p>
+                            </div>
+                        </div>
+
+                        <!-- Tab: Minutes -->
+                        <div id="tab-minutes" class="tab-pane">
+                            <section class="mom-section">
+                                <h3>1. Overview</h3>
+                                <p id="mom-overview">Loading overview...</p>
+                            </section>
+
+                            <section class="mom-section">
+                                <h3>2. Key Discussion Points</h3>
+                                <ul id="mom-key-points" class="bullets-list">
+                                    <li>Loading key points...</li>
+                                </ul>
+                            </section>
+
+                            <section class="mom-section">
+                                <h3>3. Decisions Made</h3>
+                                <ul id="mom-decisions" class="decisions-list">
+                                    <li>Loading decisions...</li>
+                                </ul>
+                            </section>
+
+                            <section class="mom-section">
+                                <h3>4. Action Items Checklist</h3>
+                                <div class="table-wrapper">
+                                    <table class="action-items-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Task Details</th>
+                                                <th>Assignee</th>
+                                                <th>Deadline</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="mom-action-items">
+                                            <tr>
+                                                <td colspan="3" class="text-center">Loading action items...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
+                        </div>
+
+                        <!-- Tab: Transcript -->
+                        <div id="tab-transcript" class="tab-pane">
+                            <div class="audio-player-container" id="view-audio-container" style="display: none;">
+                                <audio id="view-audio-player" controls></audio>
+                            </div>
+                            <div class="transcript-content" id="mom-transcript">
+                                Loading transcript...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Recording / Processing Dashboard Overlay -->
+            <div id="recording-overlay" class="overlay-panel">
+                <div class="recording-card">
+                    <div class="pulse-indicator">
+                        <div class="double-pulse"></div>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/></svg>
+                    </div>
+                    <h2 id="recording-status-title">Recording Meeting Audio</h2>
+                    <p id="recording-type-subtitle">via Browser Microphone</p>
+                    <div class="recording-timer" id="recording-timer-val">00:00</div>
+                    <div class="waveform-anim">
+                        <span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                    <div class="recording-actions">
+                        <button id="stop-record-btn" class="btn btn-danger btn-lg">Stop Recording & Process</button>
+                        <button id="cancel-record-btn" class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Processing Overlay -->
+            <div id="processing-overlay" class="overlay-panel">
+                <div class="recording-card">
+                    <div class="spinner"></div>
+                    <h2>AI Engine Processing</h2>
+                    <p>Generating transcription, extracting decisions, and compiling minutes...</p>
+                    <p class="text-xs text-muted">This may take up to a minute depending on audio length.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Settings -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>System Settings</h2>
+                <button class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="settings-form">
+                    <div class="form-group">
+                        <label for="settings-api-key">Google Gemini API Key</label>
+                        <input type="password" id="settings-api-key" placeholder="Enter Gemini API key from Google AI Studio">
+                        <small class="form-help">Get a free or pay-as-you-go key from the <a href="https://aistudio.google.com/" target="_blank">Google AI Studio</a>. Transcription is performed in the cloud, offloading Raspberry Pi resources.</small>
+                    </div>
+                    
+                    <div class="form-group" id="sounddevice-setting-group">
+                        <label for="settings-device-id">Server Physical Microphone Input Device</label>
+                        <select id="settings-device-id">
+                            <option value="">-- No Microphone / Offline Mode --</option>
+                        </select>
+                        <small class="form-help">Select the hardware microphone connected directly to the server host / Raspberry Pi.</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="settings-company">Company/Organization Name</label>
+                        <input type="text" id="settings-company" placeholder="e.g. Acme Corp">
+                        <small class="form-help">Included in the header of the exported PDF minutes reports.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="settings-ollama-model">Local Ollama Summarization Model</label>
+                        <input type="text" id="settings-ollama-model" placeholder="e.g. tinyllama, llama3.2">
+                        <small class="form-help">Select the local model running in Ollama for offline meeting summarization fallback.</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-indigo btn-block">Save Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Upload File -->
+    <div id="upload-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Upload Meeting Audio</h2>
+                <button class="close-modal-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="upload-form">
+                    <div class="form-group">
+                        <label for="upload-title">Meeting Title</label>
+                        <input type="text" id="upload-title" placeholder="e.g. Weekly Sync, Project Retro" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="upload-file">Audio File (WAV, MP3, M4A, etc.)</label>
+                        <input type="file" id="upload-file" accept="audio/*" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Upload & Process</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

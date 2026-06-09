@@ -1,0 +1,12 @@
+# Virtual environment
+.venv/
+
+# Application settings (may contain API keys)
+data/settings.json
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Editor directories
+.vscode/
