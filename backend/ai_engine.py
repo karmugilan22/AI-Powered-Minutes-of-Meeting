@@ -285,7 +285,7 @@ def _process_with_local_fallback(audio_path, ollama_model="tinyllama"):
 def _generate_rule_based_summary(transcript):
     # Basic rule-based extraction for fallbacks
     sentences = transcript.split('.')
-    overview = "This meeting was transcribed using the free Google Web Speech API fallback. For high-quality, structured summaries with decisions and action items, configure your Gemini API Key in Settings."
+    overview = "This meeting was processed locally using rule-based extraction. For high-quality, structured AI summaries, please ensure your local Ollama model is downloaded (e.g., 'ollama pull tinyllama') or configure your Gemini API Key in Settings."
     
     # Try to extract key points or potential action items by keyword scanning
     key_points = []

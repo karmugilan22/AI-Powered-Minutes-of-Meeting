@@ -10,3 +10,7 @@ __pycache__/
 
 # Editor directories
 .vscode/
+ 
+# Data artifacts
+data/audio/
+data/*.db
